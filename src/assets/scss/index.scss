@@ -1,0 +1,21 @@
+// 取消折叠面板后面的图标
+.el-collapse-item__header {
+    position: relative !important;
+}
+
+.el-collapse-item__arrow {
+    position: absolute !important;
+    left: 10px !important;
+    font-weight: bold !important;
+    color: #409eff !important;
+}
+
+.el-collapse-item__content {
+    padding: 0 !important;
+}
+
+// //table的class
+// :deep(.el-table__fixed,
+//     .el-table__fixed-right) {
+//     height: 100% !important; //设置高优先，以覆盖内联样式
+// }
