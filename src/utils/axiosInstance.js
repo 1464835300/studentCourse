@@ -2,7 +2,6 @@ import axios from 'axios';
 import { useStore } from '../stores';
 import router from "../router";
 import { ElNotification, ElMessageBox, ElMessage } from "element-plus";
-import baseURL from './config';
 import _ from 'lodash';
 import customIcon from "@/components/customIcon.vue"
 
@@ -48,7 +47,7 @@ const allowRequest = (reqList, url) => {
  */
 const loadingList = (loading, url) => {
     let index = loading.findIndex(item => item.url === url);
-    console.log(index);
+    console.log(url);
     if (index == -1 && url != '/adminInfo/checkLogin') {
         let load = ElMessage({
             icon: customIcon,
@@ -75,10 +74,9 @@ const loadingClose = (loading, url) => {
 }
 
 const axiosInstance = axios.create({
-    baseURL: baseURL,
+    baseURL: import.meta.env.VITE_BASE_URL,
     timeout: 5000,
 });
-
 // setInterval(() => {
 
 //     loading.forEach(item => item.vonde.close());
