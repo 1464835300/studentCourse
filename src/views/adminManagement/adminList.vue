@@ -39,7 +39,7 @@
             </div>
             <div class="table w-full relative">
                 <div class=" absolute w-full">
-                    <el-table ref="tableInfo" :data="resultList.listData" border max-height="400" stripe
+                    <el-table ref="tableInfo" :data="resultList.listData" border max-width="400" stripe
                         style="width: 100%">
                         <template #empty>
                             <el-empty description="暂无数据" />

@@ -43,7 +43,11 @@ const adminInfo = {
             loginname
         })
     },
-
+    /**
+     * 管理员新增
+     * @param {loginname, email, pwd, phone, gender, birth, remark, name} param0 
+     * @returns 
+     */
     register({ loginname, email, pwd, phone, gender, birth, remark, name }) {
         return axiosInstance.post('/adminInfo/register', {
             loginname, email, pwd, phone, gender, birth, remark, name

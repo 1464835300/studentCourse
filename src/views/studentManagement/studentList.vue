@@ -41,13 +41,12 @@
                     v-model:page-size="query.pageSize" :page-sizes="[5, 10, 15, 20]">
                 </el-pagination>
                 <div class="flex-1">
-                    <h2 class=" text-xl text-primaryColor ">管理员列表</h2>
+                    <h2 class=" text-xl text-primaryColor ">学生列表</h2>
                 </div>
             </div>
             <div class="table w-full relative">
                 <div class=" absolute w-full">
-                    <el-table ref="tableInfo" :data="resultList.listData" border max-height="400" stripe
-                        style="width: 100%">
+                    <el-table ref="tableInfo" :data="resultList.listData" border max-width="400" stripe style="width: 100%">
                         <template #empty>
                             <el-empty description="暂无数据" />
                         </template>
@@ -67,7 +66,7 @@
                         </el-table-column> -->
                         <el-table-column label="操作" width="150px">
                             <template #default="scope">
-                                <el-button size="small" type="success" @click="showAdd = true">编辑</el-button>
+                                <el-button size="small" type="success" @click="isUpdate(scope.row)">编辑</el-button>
                                 <el-button size="small" type="danger" @click="isDelete(scope.row, 1)">删除</el-button>
                             </template>
                         </el-table-column>
@@ -76,12 +75,18 @@
             </div>
         </div>
         <!-- 弹框 -->
-        <el-dialog v-model="showAdd" title="管理员新增">
+        <el-dialog v-model="showAdd" :title="addForm.sno ? '学生修改' : '学生新增'" @close="clearForm()">
             <el-form ref="addFormRef" :model="addForm" :rules="rules" label-width="80px">
                 <!-- <el-form-item required label="登录名" prop="loginname">
                     <el-input placeholder="请输入" v-model="addForm.loginname" autocomplete="off" />
                 </el-form-item> -->
-                <el-form-item required label="密码" prop="pwd">
+                <el-form-item required label="教室" prop="classno">
+                    <el-select style="width: 100%;" v-model="addForm.classno" placeholder="请选择" clearable filterable>
+                        <el-option v-for="item in classList" :key="item.classno" :label="item.cname" :value="item.classno">
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item v-if="!addForm.sno" required label="密码" prop="pwd">
                     <el-input placeholder="请输入密码" type="password" v-model="addForm.pwd" autocomplete="off" />
                 </el-form-item>
                 <el-form-item required label="邮箱" prop="email">
@@ -111,7 +116,10 @@
             <template #footer>
                 <span>
                     <el-button @click="showAdd = false">取消</el-button>
-                    <el-button type="primary" @click="confirm()">
+                    <el-button v-if="addForm.sno" type="primary" @click="confirm(1)">
+                        确认
+                    </el-button>
+                    <el-button v-else type="primary" @click="confirm(0)">
                         确认
                     </el-button>
                 </span>
@@ -125,6 +133,7 @@
 import { reactive, onMounted, ref } from 'vue';
 import { ElMessageBox, ElMessage } from 'element-plus'
 import API from '@/utils/API';
+import { add } from 'lodash';
 
 
 const classList = ref([]);
@@ -136,12 +145,12 @@ const addForm = reactive({
     gender: "",     //性别
     birth: "",      //生日
     remark: "",     //个性签名
-    name: ""        //姓名
+    name: "",        //姓名
+    classno: "",     //教室名称
 });
 const addFormRef = ref();
 // 邮箱
 const validate = async (rule, value, callback) => {
-    console.log(rule);
     if (value === '') {
         return callback(new Error('请输入'))
     } else {
@@ -181,6 +190,16 @@ const rules = reactive({
         message: '请选择出生年月',
         trigger: 'change',
     },],
+    classno: [{
+        required: true,
+        message: '请选择',
+        trigger: 'change',
+    }],
+    name: [{
+        required: true,
+        message: '请输入姓名',
+        trigger: 'change',
+    }]
 })
 const showAdd = ref(false);     //弹框显示
 const resultList = reactive({   //表格数据
@@ -200,8 +219,9 @@ const query = reactive({
 
 onMounted(async () => {
     getStudentInfoList();
-    const res = await API.studentInfo.getClassList()
-    classList.value = res.data;
+    const res = await API.studentInfo.getClassList();
+    console.log(res);
+    classList.value = res.data
     console.log(classList);
 })
 // 获取列表信息
@@ -246,7 +266,7 @@ const isDelete = (data, type) => {
 }
 
 // 新增确认
-const confirm = () => {
+const confirm = (type) => {
     addFormRef.value.validate((res) => {
         res && ElMessageBox.confirm(
             `是否提交?`,
@@ -257,19 +277,55 @@ const confirm = () => {
                 type: 'success',
             }
         ).then(async () => {
-            const res = await API.adminInfo.register(addForm);
-            addFormRef.value.resetFields();
-            showAdd.value = false;
-            res.data && ElMessage({
-                message: `注册成功`,
-                type: 'success',
-                duration: 1000,
-            }).then(() => {
-                getStudentInfoList();
-            })
+            if (type === 0) {
+                const res = await API.studentInfo.register(addForm);
+                if (res.status == 'success') {
+                    ElMessage({
+                        message: `新增成功`,
+                        type: 'success',
+                        duration: 1000,
+                    })
+                    showAdd.value = false;
+                    getStudentInfoList();
+                }
+            } else {
+                const res = await API.studentInfo.update(addForm);
+                if (res.status == 'success') {
+                    ElMessage({
+                        message: `修改成功`,
+                        type: 'success',
+                        duration: 1000,
+                    })
+                    showAdd.value = false;
+                    getStudentInfoList();
+                }
+            }
+
         })
     })
 
+}
+
+// 修改
+const isUpdate = (data) => {
+    Object.assign(addForm, data);
+    showAdd.value = true;
+    console.log(addForm);
+}
+
+// 清除表单
+const clearForm = () => {
+    Object.assign(addForm, {
+        sno: "",
+        email: "",      //邮箱
+        pwd: "",        //密码
+        phone: "",      //电话
+        gender: "",     //性别
+        birth: "",      //生日
+        remark: "",     //个性签名
+        name: "",        //姓名
+        classno: "",     //教室名称}) addForm
+    })
 }
 </script>
     

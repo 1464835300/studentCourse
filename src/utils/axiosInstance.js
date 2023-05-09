@@ -46,16 +46,18 @@ const allowRequest = (reqList, url) => {
  * @param {*} url 
  */
 const loadingList = (loading, url) => {
-    let index = loading.findIndex(item => item.url === url);
-    console.log(url);
-    if (index == -1 && url != '/adminInfo/checkLogin') {
-        let load = ElMessage({
-            icon: customIcon,
-            message: '加载中...',
-            type: 'success',
-            duration: 0,
-        });
-        loading.push({ url: url, vonde: load })
+    if (loading.length == 0) {
+        let index = loading.findIndex(item => item.url === url);
+        console.log(url);
+        if (index == -1 && url != '/adminInfo/checkLogin') {
+            let load = ElMessage({
+                icon: customIcon,
+                message: '加载中...',
+                type: 'success',
+                duration: 0,
+            });
+            loading.push({ url: url, vonde: load })
+        }
     }
 }
 
@@ -78,8 +80,8 @@ const axiosInstance = axios.create({
     timeout: 5000,
 });
 // setInterval(() => {
-
 //     loading.forEach(item => item.vonde.close());
+//     loading = [];
 // }, 5000)
 
 axiosInstance.interceptors.request.use(
@@ -99,9 +101,11 @@ axiosInstance.interceptors.request.use(
 );
 
 axiosInstance.interceptors.response.use(resp => {
-    if (resp.config.url != '/adminInfo/checkLogin') {
-        loadingClose(loading, resp.config.url)
-    }
+    loading.forEach(item => item.vonde.close());
+    loading = [];
+    // if (resp.config.url != '/adminInfo/checkLogin') {
+    //     loadingClose(loading, resp.config.url)
+    // }
     // loading.close();
     // 增加延迟，相同请求不得在短时间内重复发送
     // if(resp.config.url == )
@@ -114,7 +118,8 @@ axiosInstance.interceptors.response.use(resp => {
         return Promise.resolve(resp.data);
     }
 }, error => {
-    loadingClose(loading, error.config.url)
+    loading.forEach(item => item.vonde.close());
+    loading = [];
     if (error.response) {
         if (error.response.status === 403) {
             useStore().logOut();
@@ -135,7 +140,7 @@ axiosInstance.interceptors.response.use(resp => {
 
         }
     }
-    return Promise.reject(error.response)
+    // return Promise.reject(error.response)
 }
 );
 

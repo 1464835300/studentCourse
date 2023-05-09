@@ -17,7 +17,7 @@ export default {
             text: '课程列表',
             url: '/courseManagement/courseList',
         }, {
-            text: '查询课程学生列表',
+            text: '查询学生所选课程',
             url: '/courseManagement/courseListforStudent',
         }]
     }, {

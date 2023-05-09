@@ -18,6 +18,26 @@ const studentInfo = {
      */
     getClassList() {
         return axiosInstance.post("/studentInfo/getClassList");
+    },
+    /**
+     * 新增学生
+     * @param {classno, email, pwd, phone, gender, birth, remark, name } param0 
+     * @returns 
+     */
+    register({ classno, email, pwd, phone, gender, birth, remark, name }) {
+        return axiosInstance.post('/studentInfo/register', {
+            classno, email, pwd, phone, gender, birth, remark, name
+        })
+    },
+    /**
+     * 修改学生信息
+     * @param {sno, classno, email, phone, gender, birth, remark, name} param0 
+     * @returns 
+     */
+    update({ sno, classno, email, phone, gender, birth, remark, name }) {
+        return axiosInstance.post('/studentInfo/update', {
+            sno, classno, email, phone, gender, birth, remark, name
+        })
     }
 }
 
