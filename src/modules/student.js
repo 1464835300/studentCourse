@@ -5,7 +5,7 @@ export default {
         icon: 'Tools',
         items: [{
             text: '已选课程列表',
-            url: '/courseManagement/studentTheselectedcourse',
+            url: '/courseManagement/courseListforStudent',
         }, {
             text: '选课',
             url: '/courseManagement/courseList',

@@ -43,7 +43,9 @@ import { useRouter } from "vue-router";
 // setTimeout(() => {
 //   state.loading = false;
 // }, 1000);
-
+// onMounted(()=>{
+//     location.reload();
+// })
 const store = useStore();
 const router = useRouter();
 

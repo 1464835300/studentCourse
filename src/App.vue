@@ -16,6 +16,7 @@ const isLogin = ref(false);
 router.beforeEach((to, from, next) => {
   if (to.path === "/Login") {
     isLogin.value = true;
+    // location.reload();
     return next();
   }
   const Token = store.token;

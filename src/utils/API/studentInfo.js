@@ -38,7 +38,16 @@ const studentInfo = {
         return axiosInstance.post('/studentInfo/update', {
             sno, classno, email, phone, gender, birth, remark, name
         })
-    }
+    },
+    /**
+     * 可选课程列表
+     * @param {*} param0 
+     */
+    chooseCourseList({sno,pageIndex,pageSize}){
+        return axiosInstance.post('/studentInfo/chooseCourseList', {
+            sno,pageIndex,pageSize
+        })
+    },
 }
 
 export default studentInfo

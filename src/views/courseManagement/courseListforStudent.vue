@@ -27,7 +27,7 @@
           <el-form-item label="学生姓名">
             <el-input placeholder="请输入" v-model="query.sname" />
           </el-form-item>
-          <el-form-item label="学生学号">
+          <el-form-item v-if="!isStudent" label="学生学号">
             <el-input placeholder="请输入" v-model="query.sno" />
           </el-form-item>
           <el-form-item label="老师姓名">
@@ -48,7 +48,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="resultList.totalCount"
           v-model:page-size="query.pageSize"
-          :page-sizes="[5, 10, 15, 20]"
+          :page-sizes="[10, 15, 20]"
         >
         </el-pagination>
         <div class="flex-1">
@@ -89,9 +89,16 @@
 <script setup>
 import { reactive, onMounted, ref } from "vue";
 import { ElMessageBox, ElMessage } from "element-plus";
+import { useStore } from "../../stores";
 import API from "@/utils/API";
-
+const store = useStore();
+const isStudent = ref(false);
 onMounted(() => {
+  if (store.loginClientInfo.type === 1) {
+    isStudent.value = true;
+    query.sno = store.loginClientInfo.sno;
+  }
+  console.log(query);
   getInfoList();
 });
 const tableInfo = ref(); //表格ref
@@ -110,14 +117,14 @@ const query = reactive({
   sname: "", //学生名称
   sno: "", //学生学号
   pageIndex: 1,
-  pageSize: 5,
+  pageSize: 10,
 });
 // 获取列表信息
 const getInfoList = async () => {
   const res = await API.customInfo.getSeletedByCourse(query);
   console.log(res);
-  resultList.pageCount = 1;
-  resultList.totalCount = 2;
+  resultList.pageCount = res.data.pageCount;
+  resultList.totalCount = res.data.totalCount;
   resultList.listData = res.data.listData;
 };
 
