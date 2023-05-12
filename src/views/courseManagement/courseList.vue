@@ -22,7 +22,7 @@
       <button
         class="border-[#409eff] rounded-sm bg-[#409eff] borde border text-sm text-white whitespace-nowrap px-14 py-4 mx-2"
         type="button"
-        @click="isStudent ? getChooseList() : getCourseList()"
+        @click="isStudent.value ? getChooseList() : getCourseList()"
       >
         查询
       </button>
@@ -213,7 +213,7 @@ onMounted(async () => {
   if (store.loginClientInfo.type === 1) {
     isStudent.value = true;
   }
-  if (isStudent) {
+  if (isStudent.value) {
     getChooseList();
     return;
   }
